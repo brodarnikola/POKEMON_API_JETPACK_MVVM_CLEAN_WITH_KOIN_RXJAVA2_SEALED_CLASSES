@@ -104,9 +104,7 @@ class PokemonViewModel @Inject constructor(
 
     fun getPokemonData() {
 
-        viewModelScope.launch {
-
-            pokemonRepository.getAllPokemons(100, 0)
+        pokemonRepository.getAllPokemons(100, 0)
                 .flatMap(object : io.reactivex.functions.Function<ResultState<AllPokemons>,
                         Observable<ResultState<MainPokemon>>> {
                     //@Throws
@@ -166,8 +164,6 @@ class PokemonViewModel @Inject constructor(
                         Log.e(ContentValues.TAG, "onError received: ", e)
                     }
                 })
-        }
-
     }
 
     private fun getRandomSelectedPokemonId(allPokemons: ResultState.Success<*>) : Int {
