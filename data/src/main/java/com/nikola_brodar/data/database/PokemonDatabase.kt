@@ -38,7 +38,7 @@ abstract class PokemonDatabase : RoomDatabase() {
 
     companion object {
 
-        fun create(context: Context): PokemonDatabase {
+        fun getInstance(context: Context): PokemonDatabase {
 
             return Room.databaseBuilder(
                 context,

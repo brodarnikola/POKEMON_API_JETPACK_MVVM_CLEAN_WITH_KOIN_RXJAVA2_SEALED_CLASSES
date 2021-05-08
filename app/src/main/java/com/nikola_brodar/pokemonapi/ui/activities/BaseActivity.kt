@@ -10,11 +10,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.nikola_brodar.pokemonapi.App
 import com.nikola_brodar.pokemonapi.R
 import com.nikola_brodar.pokemonapi.connectivity.network.ConnectivityChangedEvent
-import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
-@AndroidEntryPoint
 open class BaseActivity(noWifiViewId: Int = 0) : AppCompatActivity() {
 
     protected var viewLoaded = false

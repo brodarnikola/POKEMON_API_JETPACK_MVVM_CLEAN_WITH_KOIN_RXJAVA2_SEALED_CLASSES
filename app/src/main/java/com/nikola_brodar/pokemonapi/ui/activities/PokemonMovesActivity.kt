@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,11 +18,12 @@ import com.nikola_brodar.pokemonapi.ui.utilities.hide
 import com.nikola_brodar.pokemonapi.ui.utilities.show
 import com.nikola_brodar.pokemonapi.viewmodels.PokemonViewModel
 import kotlinx.android.synthetic.main.activity_pokemon.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class PokemonMovesActivity : BaseActivity(R.id.no_internet_layout) {
 
-    val pokemonViewModel: PokemonViewModel by viewModels()
+    val pokemonViewModel: PokemonViewModel by viewModel()
 
     private lateinit var pokemonAdapter: PokemonMovesAdapter
     var pokemonLayoutManager: LinearLayoutManager? = null

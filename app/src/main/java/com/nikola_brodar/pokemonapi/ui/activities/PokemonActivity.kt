@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,13 +19,14 @@ import com.nikola_brodar.pokemonapi.viewmodels.PokemonViewModel
 import com.nikola_brodar.pokemonapi.ui.utilities.hide
 import com.nikola_brodar.pokemonapi.ui.utilities.show
 import kotlinx.android.synthetic.main.activity_pokemon.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class PokemonActivity : BaseActivity(R.id.no_internet_layout) {
 
     var displayCurrentPokemonData = false
 
-    val pokemonViewModel: PokemonViewModel by viewModels()
+    val pokemonViewModel: PokemonViewModel by viewModel()
 
     private lateinit var pokemonAdapter: PokemonAdapter
     var pokemonLayoutManager: LinearLayoutManager? = null

@@ -25,28 +25,20 @@ import androidx.lifecycle.viewModelScope
 import com.nikola_brodar.data.database.PokemonDatabase
 import com.nikola_brodar.data.database.mapper.DbMapper
 import com.nikola_brodar.data.database.model.DBMainPokemon
-import com.nikola_brodar.data.di_dagger2.PokemonNetwork
 import com.nikola_brodar.domain.ResultState
 import com.nikola_brodar.domain.model.AllPokemons
 import com.nikola_brodar.domain.model.MainPokemon
 import com.nikola_brodar.domain.repository.PokemonRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.Observable
-import io.reactivex.ObservableOnSubscribe
-import io.reactivex.ObservableSource
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-import java.lang.Exception
-import javax.inject.Inject
 
 
-@HiltViewModel
-class PokemonViewModel @Inject constructor(
-    @PokemonNetwork private val pokemonRepository: PokemonRepository,
+class PokemonViewModel constructor(
+    private val pokemonRepository: PokemonRepository,
     private val dbPokemon: PokemonDatabase,
     private val dbMapper: DbMapper?
 ) : ViewModel() {
@@ -106,8 +98,8 @@ class PokemonViewModel @Inject constructor(
 
         pokemonRepository.getAllPokemons(100, 0)
                 .flatMap(object : io.reactivex.functions.Function<ResultState<AllPokemons>,
-                        Observable<ResultState<MainPokemon>>> {
-                    //@Throws
+                        Observable<ResultState<MainPokemon>> > {
+                    @Throws
                     override fun apply(posts: ResultState<AllPokemons>): Observable<ResultState<MainPokemon>> {
 
                         when (posts) {

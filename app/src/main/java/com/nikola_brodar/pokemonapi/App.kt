@@ -3,10 +3,16 @@ package com.nikola_brodar.pokemonapi
 import android.app.Application
 import com.nikola_brodar.pokemonapi.connectivity.network.ConnectivityChangedEvent
 import com.nikola_brodar.pokemonapi.connectivity.network.ConnectivityMonitor
-import dagger.hilt.android.HiltAndroidApp
+import com.nikola_brodar.pokemonapi.di.presentationModule
+import com.vjezba.data.di.databaseModule
+import com.vjezba.data.di.networkingModule
+import com.vjezba.data.di.repositoryModule
 import org.greenrobot.eventbus.EventBus
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
+import org.koin.core.logger.Level
 
-@HiltAndroidApp
 class App : Application() {
 
     init {
@@ -29,6 +35,15 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         //instance = this
+
+        val appModules = listOf(presentationModule)
+        val dataModules = listOf( networkingModule, repositoryModule, databaseModule)
+
+        startKoin {
+            androidContext(this@App)
+            if (BuildConfig.DEBUG) androidLogger(Level.ERROR)
+            modules(appModules + dataModules )
+        }
 
         ConnectivityMonitor.initialize(this) { available ->
             eventBus.post(
