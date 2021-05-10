@@ -32,7 +32,6 @@ val networkingModule = module {
             .baseUrl(BASE_URL)
             .client(get())
             .addConverterFactory(get())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
     }
     single { get<Retrofit>(named("retrofitPokemon")).create(PokemonRepositoryApi::class.java) }

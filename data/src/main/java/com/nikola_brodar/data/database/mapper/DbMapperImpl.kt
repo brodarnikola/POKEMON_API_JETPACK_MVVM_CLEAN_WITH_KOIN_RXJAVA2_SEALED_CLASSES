@@ -5,59 +5,10 @@ import com.nikola_brodar.data.database.model.DBPokemonMoves
 import com.nikola_brodar.data.database.model.DBPokemonStats
 import com.nikola_brodar.data.networking.model.ApiAllPokemons
 import com.nikola_brodar.data.networking.model.ApiMainPokemon
-import com.nikola_brodar.domain.ResultState
 import com.nikola_brodar.domain.model.*
 
 class DbMapperImpl : DbMapper {
 
-
-    override fun mapAllPokemonToDomainAllPokemon(pokemon: ApiAllPokemons): ResultState<AllPokemons> {
-        return with(pokemon) {
-            ResultState.Success(
-                AllPokemons(
-                    count,
-                    results.map {
-                        AllPokemonsData(
-                            it.name,
-                            it.url
-                        )
-                    }
-                )
-            )
-        }
-    }
-
-    override fun mapApiPokemonToDomainPokemon(pokemon: ApiMainPokemon): ResultState<MainPokemon> {
-        return with(pokemon) {
-            ResultState.Success(
-                MainPokemon(
-                    name,
-                    PokemonSprites(
-                        sprites.backDefault,
-                        sprites.frontDefault
-                    ),
-                    stats.map {
-                        with(it) {
-                            PokemonStats(
-                                baseStat,
-                                stat = PokemonStatsName(
-                                    stat.name
-                                )
-                            )
-                        }
-                    },
-                    moves.map {
-                        PokemonMainMoves(
-                            PokemonMove(
-                                it.move.name,
-                                it.move.url
-                            )
-                        )
-                    }
-                )
-            )
-        }
-    }
 
     override fun mapDomainPokemonStatsToDbPokemonStats(pokemon: List<PokemonStats>): List<DBPokemonStats> {
         return pokemon.map {
@@ -96,6 +47,50 @@ class DbMapperImpl : DbMapper {
                     it.name,
                     it.url
                 )
+            )
+        }
+    }
+
+    override fun mapAllPokemonToDomainAllPokemon(pokemon: ApiAllPokemons): AllPokemons {
+        return with(pokemon) {
+            AllPokemons(
+                count,
+                results.map {
+                    AllPokemonsData(
+                        it.name,
+                        it.url
+                    )
+                }
+            )
+        }
+    }
+
+    override fun mapApiPokemonToDomainPokemon(pokemon: ApiMainPokemon): MainPokemon {
+        return with(pokemon) {
+            MainPokemon(
+                name,
+                PokemonSprites(
+                    sprites.backDefault,
+                    sprites.frontDefault
+                ),
+                stats.map {
+                    with(it) {
+                        PokemonStats(
+                            baseStat,
+                            stat = PokemonStatsName(
+                                stat.name
+                            )
+                        )
+                    }
+                },
+                moves.map {
+                    PokemonMainMoves(
+                        PokemonMove(
+                            it.move.name,
+                            it.move.url
+                        )
+                    )
+                }
             )
         }
     }

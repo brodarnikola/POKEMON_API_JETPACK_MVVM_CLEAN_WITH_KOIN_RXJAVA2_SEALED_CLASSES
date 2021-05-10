@@ -14,15 +14,9 @@ import com.nikola_brodar.domain.model.PokemonStats
 
 interface DbMapper {
 
-    //fun mapAllPokemonToDomainAllPokemon( pokemon: ApiAllPokemons): AllPokemons
+    fun mapAllPokemonToDomainAllPokemon( pokemon: ApiAllPokemons): AllPokemons
 
-    fun mapAllPokemonToDomainAllPokemon( pokemon: ApiAllPokemons): ResultState<AllPokemons>
-
-    //fun mapApiPokemonToDomainPokemon( pokemon: ApiMainPokemon): MainPokemon
-
-    fun mapApiPokemonToDomainPokemon( pokemon: ApiMainPokemon): ResultState<MainPokemon>
-
-
+    fun mapApiPokemonToDomainPokemon( pokemon: ApiMainPokemon): MainPokemon
 
     fun mapDomainMainPokemonToDBMainPokemon(pokemon: MainPokemon): DBMainPokemon
 

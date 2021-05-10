@@ -29,12 +29,8 @@ import com.nikola_brodar.domain.ResultState
 import com.nikola_brodar.domain.model.AllPokemons
 import com.nikola_brodar.domain.model.MainPokemon
 import com.nikola_brodar.domain.repository.PokemonRepository
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 
 
 class PokemonViewModel constructor(
@@ -42,8 +38,6 @@ class PokemonViewModel constructor(
     private val dbPokemon: PokemonDatabase,
     private val dbMapper: DbMapper?
 ) : ViewModel() {
-
-    private val compositeDisposable = CompositeDisposable()
 
     private val _pokemonMutableLiveData: MutableLiveData<ResultState<*>> = MutableLiveData()
 
@@ -96,72 +90,48 @@ class PokemonViewModel constructor(
 
     fun getPokemonData() {
 
-        pokemonRepository.getAllPokemons(100, 0)
-                .flatMap(object : io.reactivex.functions.Function<ResultState<AllPokemons>,
-                        Observable<ResultState<MainPokemon>> > {
-                    @Throws
-                    override fun apply(posts: ResultState<AllPokemons>): Observable<ResultState<MainPokemon>> {
+        viewModelScope.launch {
 
-                        when (posts) {
-                            is ResultState.Success -> {
-
-                                val pokemonID = getRandomSelectedPokemonId(posts)
-                                return pokemonRepository.getRandomSelectedPokemon(pokemonID)
-                                    .subscribeOn(Schedulers.io())
-                            }
-                            is ResultState.Error -> {
-                                _pokemonMutableLiveData.value = posts
-                                return Observable.fromIterable(mutableListOf<ResultState<MainPokemon>>() )
-                                    .subscribeOn(Schedulers.io())
-                            }
-                            else -> {
-                                return Observable.fromIterable(mutableListOf<ResultState<MainPokemon>>() )
-                                    .subscribeOn(Schedulers.io())
-                            }
-                        }
-                    }
-                })
-                .map { randomSelectedPokemon ->
-
-                    when (randomSelectedPokemon) {
+            val loading = ResultState.Loading
+            _pokemonMutableLiveData.value = loading
+            flowOf( getAllPokemonData() )
+                .onEach {  allPokemons ->
+                    when( allPokemons ) {
                         is ResultState.Success -> {
-                            deleteAllPokemonData()
-                            insertPokemonIntoDatabase(randomSelectedPokemon.data)
 
+                            val pokemonID = getRandomSelectedPokemonId(allPokemons)
+                            flowOf( pokemonRepository.getRandomSelectedPokemon(pokemonID) )
+                                .map { randomSelectedPokemon ->
+
+                                    when( randomSelectedPokemon )  {
+                                        is ResultState.Success -> {
+                                            deleteAllPokemonData()
+                                            insertPokemonIntoDatabase(randomSelectedPokemon.data as MainPokemon)
+                                            _pokemonMutableLiveData.value = randomSelectedPokemon
+                                        }
+                                        is ResultState.Error -> {
+                                            _pokemonMutableLiveData.value = randomSelectedPokemon
+                                        }
+                                    }
+                                }.collect()
                         }
                         is ResultState.Error -> {
-                            _pokemonMutableLiveData.value = randomSelectedPokemon
+                            _pokemonMutableLiveData.value = allPokemons
+                        }
+                        else -> {
+                            val errorDefault = ResultState.Error("", null)
+                            _pokemonMutableLiveData.value = errorDefault
                         }
                     }
-                    randomSelectedPokemon
                 }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : io.reactivex.Observer<ResultState<*>> {
-
-
-                    override fun onComplete() {}
-
-
-                    override fun onSubscribe(d: Disposable) {
-                        compositeDisposable.add(d)
-                    }
-
-                    override fun onNext(post: ResultState<*>) {
-
-                        _pokemonMutableLiveData.value = post
-                    }
-
-                    override fun onError(e: Throwable) {
-                        Log.e(ContentValues.TAG, "onError received: ", e)
-                    }
-                })
+                .launchIn(viewModelScope)
+        }
     }
 
     private fun getRandomSelectedPokemonId(allPokemons: ResultState.Success<*>) : Int {
         val randomPokemonUrl = allPokemons.data as AllPokemons
         val separateString = randomPokemonUrl.results.random().url.split("/")
-        val pokemonId = separateString.get(separateString.size - 2)
+        val pokemonId = separateString.get( separateString.size - 2 )
         Log.d(
             ContentValues.TAG,
             "Id is: ${pokemonId.toInt()}"
@@ -169,13 +139,18 @@ class PokemonViewModel constructor(
         return pokemonId.toInt()
     }
 
-    private fun deleteAllPokemonData() {
-        dbPokemon.pokemonDAO().clearMainPokemonData()
-        dbPokemon.pokemonDAO().clearPokemonStatsData()
-        dbPokemon.pokemonDAO().clearMPokemonMovesData()
+    private suspend fun deleteAllPokemonData() {
+        coroutineScope {
+            val deferreds = listOf(
+                async { dbPokemon.pokemonDAO().clearMainPokemonData() },
+                async { dbPokemon.pokemonDAO().clearPokemonStatsData() },
+                async { dbPokemon.pokemonDAO().clearMPokemonMovesData() }
+            )
+            deferreds.awaitAll()
+        }
     }
 
-    private fun insertPokemonIntoDatabase(pokemonData: MainPokemon) {
+    private suspend fun insertPokemonIntoDatabase(pokemonData: MainPokemon) {
 
         val pokemonMain =
             dbMapper?.mapDomainMainPokemonToDBMainPokemon(pokemonData) ?: DBMainPokemon()
@@ -190,10 +165,8 @@ class PokemonViewModel constructor(
         dbPokemon.pokemonDAO().insertMovesPokemonData(pokemonMoves)
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        if (!compositeDisposable.isDisposed)
-            compositeDisposable.dispose()
+    private suspend fun getAllPokemonData(): ResultState<*> {
+        return pokemonRepository.getAllPokemons(100, 0)
     }
 
 }
