@@ -32,13 +32,14 @@ interface PokemonRepositoryApi {
 
     @GET("pokemon")
     @Headers("Content-Type: application/json")
-    suspend fun getAllPokemons(  @Query("limit") limit: Int, @Query("offset") offset: Int  ): Response<ApiAllPokemons>
+    fun getAllPokemons(  @Query("limit") limit: Int,
+                         @Query("offset") offset: Int  ): Observable<ApiAllPokemons>
 
 
 
     @GET("pokemon/{id}")
     @Headers("Content-Type: application/json")
-    suspend fun getRandomSelectedPokemon( @Path("id") id: Int ):  Response<ApiMainPokemon>
+    fun getRandomSelectedPokemon( @Path("id") id: Int ):  Observable<ApiMainPokemon>
 
 
 }

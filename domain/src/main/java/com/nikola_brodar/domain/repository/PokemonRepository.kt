@@ -16,14 +16,16 @@
 
 package com.nikola_brodar.domain.repository
 
-import com.nikola_brodar.domain.ResultState 
+import com.nikola_brodar.domain.ResultState
+import com.nikola_brodar.domain.model.*
 
+import io.reactivex.Observable
 
 interface PokemonRepository {
 
-    suspend fun getAllPokemons(limit: Int, offset: Int) : ResultState<*> //AllPokemons
+    fun getAllPokemons(limit: Int, offset: Int) : Observable<ResultState<AllPokemons>> //AllPokemons
 
-    suspend fun getRandomSelectedPokemon(id: Int) : ResultState<*> //MainPokemon
+    fun getRandomSelectedPokemon(id: Int) : Observable<ResultState<MainPokemon>> //MainPokemon
 
 
 }

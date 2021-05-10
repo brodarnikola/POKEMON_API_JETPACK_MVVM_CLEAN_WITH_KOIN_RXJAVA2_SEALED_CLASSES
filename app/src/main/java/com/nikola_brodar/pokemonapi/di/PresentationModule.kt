@@ -38,24 +38,4 @@ val presentationModule = module {
 
   viewModel { PokemonViewModel(get(), get(), get()) }
 
-/*  viewModel { (handle: SavedStateHandle) -> LanguagesListViewModel(handle, get()) }
-  viewModel { SavedLanguagesListViewModel(get()) }
-  viewModel { (languagedId : Int) -> LanguageDetailsViewModel(get(), get(), languagedId) }
-  viewModel { LoginViewModel(get()) }
-  factory { RegistrationViewModel(get()) }
-  viewModel { EnterDetailsViewModel() }
-  viewModel { LanguagesActivityViewModel(get()) }
-  viewModel { PaggingWithNetworkAndDbViewModel( ) }
-  viewModel { PaggingWithNetworkAndDbDataViewModel(get() ) }
-
-  viewModel { FlowWeatherViewModel(get(), get() ) }
-  viewModel { FlowMultipleExamplesViewModel() }
-
-
-  single<ImageLoader> { ImageLoaderImpl() }
-
-  //single { Picasso.get() }
-
-  single<WeatherViewStateMapper> { WeatherViewStateMapperImpl() }*/
-
 }

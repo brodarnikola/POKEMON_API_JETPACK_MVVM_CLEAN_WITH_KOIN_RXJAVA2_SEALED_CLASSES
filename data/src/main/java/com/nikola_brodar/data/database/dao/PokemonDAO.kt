@@ -38,23 +38,24 @@ import com.nikola_brodar.data.database.model.DBPokemonStats
 @Dao
 interface PokemonDAO {
 
+
   @Query("DELETE FROM pokemon_main_table")
-  suspend fun clearMainPokemonData()
+  fun clearMainPokemonData()
 
   @Query("DELETE FROM pokemon_stats_table")
-  suspend fun clearPokemonStatsData()
+  fun clearPokemonStatsData()
 
   @Query("DELETE FROM pokemon_moves_table")
-  suspend fun clearMPokemonMovesData()
+  fun clearMPokemonMovesData()
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  suspend fun insertMainPokemonData(pokemon: DBMainPokemon)
+  fun insertMainPokemonData(pokemon: DBMainPokemon)
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  suspend fun insertStatsPokemonData(pokemonStats: List<DBPokemonStats>)
+  fun insertStatsPokemonData(pokemonStats: List<DBPokemonStats>)
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  suspend fun insertMovesPokemonData(pokemonMoves: List<DBPokemonMoves>)
+  fun insertMovesPokemonData(pokemonMoves: List<DBPokemonMoves>)
 
 
   @Query("SELECT * FROM pokemon_main_table")
